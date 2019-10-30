@@ -1,0 +1,80 @@
+Download Tomcat 8.5
+-------------------------
+Go to tomcat official website
+  https://tomcat.apache.org/download-80.cgi
+Under Binary Distibutions > core > 64-bit Windows zip (pgp, sha512)
+apache-tomcat-8.5.43-windows-x64 will be get Download
+Unzip it
+Create a directoty as Tomcat in C:\Program Files
+Copy unzip tomcat version and paste it to C:\Program Files\Tomcat
+So our url will be C:\Program Files\Tomcat\apache-tomcat-8.5.43
+
+Now set the environment as system variable
+Name: CATALINA_HOME
+value: C:\Program Files\Tomcat\apache-tomcat-8.5.43
+
+Set path as C:\Program Files\Tomcat\apache-tomcat-8.5.43\bin
+
+Now go to C:\Program Files\Tomcat\apache-tomcat-8.5.43\bin
+Here you will se startup ans shutdown windows batch file to start and stop tomcat
+
+press shift+right-btn 
+Now cmd prompt will be open
+type startup.bat
+so another cmd prompt window will open showing that server is running.
+
+Now go to browser ans paste url as http://localhost:8080
+you will see on 8080 port jenkins is already runnning
+Now changing the port of tomcat to 9090 
+
+Changing port of tomcat to 9090
+----------------------------------
+Go to C:\Program Files\Tomcat\apache-tomcat-8.5.43\conf
+open server.xmlr
+in sever.xml, there is connect port,change port to 9090,save and close.
+
+Now go to C:\Program Files\Tomcat\apache-tomcat-8.5.43\bin in cmd prompt
+type shutdown.bat
+you will se the window that is open at the time of tomcat startup is closed now.
+Again start tomcat
+
+Now open browser and http://localhost:9090
+tomcat dashboard will be shown
+
+Now click on ManagerApp or HostManager or Server staus
+it is showing 401 Unauthorized errors.
+Now go to C:\Program Files\Tomcat\apache-tomcat-8.5.43 and in search bar paste context.xml
+so three files will be get popolated as 
+
+C:\Program Files\Tomcat\apache-tomcat-8.5.43\conf\context.xml
+C:\Program Files\Tomcat\apache-tomcat-8.5.43\webapps\host-manager\META-INF\context.xml
+C:\Program Files\Tomcat\apache-tomcat-8.5.43\webapps\manager\META-INF\context.xml
+
+comment valut in host-manager and manager context.xml and save it
+
+Now setting roles and username in tomcat-users.xml file in conf folder.
+open tomcat-users.xml file and paste following.
+
+	<role rolename="manager-gui"/>
+	<role rolename="manager-script"/>
+	<role rolename="manager-jmx"/>
+	<role rolename="manager-status"/>
+	<user username="admin" password="TAdmin" roles="manager-gui, manager-script, manager-jmx, manager-status, admin-gui"/>
+	<user username="deployer" password="deployer" roles="manager-script"/>
+	<!-- <user username="tomcat" password="s3cret" roles="manager-gui"/> -->
+
+save it and close it.
+shutdown and start tomcat.
+
+Test tomcat application
+-------------------------
+Create test folder in webapp folder
+Create index.html with hello world content in the webapp folder.
+
+Reoload the page,you will see test application in the list.
+Click on test you will get output in the browser.
+
+ 
+
+
+	 

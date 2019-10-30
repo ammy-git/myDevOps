@@ -1,0 +1,100 @@
+Prerequisites
+--------------
+Previously installed jenkins on amazon linux named as (Jenkins-Server)
+Start that amazon linux instance 
+
+Start Jenkins
+-------------------
+Copy the public ip of the linux instance
+Open Browser,Paste the copied addess of linux instance
+  http://public-ip:8080
+Login to the jenkins using last time created admin credentials
+
+As a root
+---------
+sudo su
+cd 
+source ~/.bash_profile
+
+Install Maven on Jenkins
+--------------------------
+Download latest version (3.6.1) maven packages https://maven.apache.org/download.cgi onto Jenkins server. 
+In this case I am using /opt/maven as my installation directory - Link : https://maven.apache.org/download.cgi
+You can visit also for archived copy of maven previous version - Link : https://archive.apache.org/dist/maven/maven-3/
+
+# Creating maven directory under /opt
+  mkdir /opt/maven
+  cd /opt/maven
+
+# downloading maven version 3.6.0
+  wget https://archive.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.zip
+  unzip apache-maven-3.6.0-bin.zip
+  rm -rf apache-maven-3.6.0-bin.zip
+
+# setup M2_HOME and M2 paths in .bash_profile of user and add these to path variable
+   vi ~/.bash_profile
+	
+   JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.191.b12-1.el7_6.x86_64
+   M2_HOME=/opt/maven/apache-maven-3.6.0
+   M2=$M2_HOME/bin
+   PATH=$PATH:$JAVA_HOME:$M2_HOME:$M2:$HOME/bin
+
+   save the file
+   source ~/.bash_profile
+   Execute : echo $PATH or echo $JAVA_HOME or echo $M2_HOME or echo $M2
+   Output should print the path
+
+# check point
+   mvn -version 
+
+Setup maven on jenkins console
+-------------------------------
+Install maven plugin without restart
+   Manage Jenkins > Jenkins Plugins > available > Maven Invoker
+Configure java path
+  Manage Jenkins > Global Tool Configuration > Maven
+  Name=Maven
+  MAVEN_HOME=/opt/maven/apache-maven-3.6.0
+
+Install Git on Jenkins server
+----------------------------------
+# Install git packages on jenkins server
+  yum install git -y
+
+Setup Git on jenkins console
+-----------------------------
+#Install git plugin without restart
+  Manage Jenkins > Jenkins Plugins > available > github
+
+#Configure git path
+  Manage Jenkins > Global Tool Configuration > git
+
+
+If Not Getting Maven Project in Jenkins Item
+--------------------------------------------
+# Install Unleash Maven Plugin 
+  Manage Jenkins > Jenkins Plugins > available > Manage Plugin
+click on "Download now and install after restart"
+
+Test Maven Jobs
+------------------
+1. Create “new item”
+2. Enter an item name – maven-helloworld
+	Chose Maven project
+3. Under Source Code Management > choose Git
+	Repository URL : https://github.com/ayazuddin007/hello-world
+4. Under Build 
+        Goals and options : install package (first time build)
+        Goals and options : clean install package (second time build)
+5. Under Build section Execute shell : 
+	#!/bin/bash
+	echo "Welcome to Jenkins Maven Demo"
+6. Save your job
+7. Build job
+8. Check "console output"
+  
+  
+  
+
+
+  

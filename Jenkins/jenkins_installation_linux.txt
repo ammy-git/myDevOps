@@ -1,0 +1,93 @@
+Prerequisites:
+----------------
+1.EC2 Amazon Linux Instance
+   - With Internet Access
+   - Security Group with Port 8080 open for internet
+2. Java v1.8.x
+
+As a root user
+---------------
+sudo su
+cd
+source ~/.bash_profile
+
+Install Java
+----------------
+We will be using open java for our demo, Get latest version from http://openjdk.java.net/install/
+
+yum install java-1.8* -y
+ OR
+yum -y install java-1.8.0-openjdk
+
+Confirm Java Version
+-----------------------
+Lets install java and set the java home
+
+1. java -version
+
+2. find /usr/lib/jvm/java-1.8* | head -n 3  or find / -name javac
+
+3. vi ~/.bash_profile
+
+   JAVA_HOME= /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-0.amzn2.x86_64
+
+   PATH=$PATH:$JAVA_HOME:$HOME/bin
+
+   save the file
+   source ~/.bash_profile
+   Execute : echo $JAVA_HOME
+   Output should print the path
+
+Install Jenkins
+-------------------
+yum -y install wget
+wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+yum -y install jenkins
+
+Start Jenkins
+--------------
+systemctl start jenkins
+systemctl enable jenkins
+
+Accessing Jenkins
+------------------
+By default jenkins runs at port 8080, You can access jenkins at
+
+http://YOUR-SERVER-PUBLIC-IP:8080
+
+If not, then open security group with port 8080 (anywhere)
+
+Configure Jenkins
+--------------------
+Grab the default password
+  cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Paste it > click on next  
+Install plugin or skip
+Set Username and Password > click on Next
+
+Change admin password
+  Admin > Configure > Password
+
+Configure java path
+  1. Manage Jenkins > Global Tool Configuration > JDK
+  
+  2. 	 
+ 
+     JDK =Java
+     JAVA_HOME =/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-0.amzn2.x86_64
+
+  3. click on save
+
+Test Jenkins Jobs
+------------------
+1. Create “new item”
+2. Enter an item name – Project
+	Chose Freestyle project
+3. Under Build section Execute shell : 
+	#!/bin/bash
+	echo "Welcome to Jenkins Demo"
+4. Save your job
+5. Build job
+6. Check "console output"

@@ -1,0 +1,37 @@
+To Create (On k8s Management Server after root)
+======================================
+sudo su -
+
+1)  export KOPS_STATE_STORE=s3://demo.k8s.amketty.tk
+
+2) kops create cluster --cloud=aws --zones=ap-south-1b  --name=demo.k8s.amketty.tk  --dns-zone=amketty.tk  --dns private 
+
+Suggestions:
+ * list clusters with: kops get cluster
+ * edit this cluster with: kops edit cluster demo.k8s.amketty.tk
+ * edit your node instance group: kops edit ig --name=demo.k8s.amketty.tk nodes
+ * edit your master instance group: kops edit ig --name=demo.k8s.amketty.tk master-ap-south-1b
+
+Finally configure your cluster with: kops update cluster --name demo.k8s.amketty.tk --yes
+
+3)  kops update cluster --name demo.k8s.amketty.tk --yes
+4) kops validate cluster
+5) ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.amketty.tk
+
+Suggestions:
+ * validate cluster: kops validate cluster
+ * list nodes: kubectl get nodes --show-labels
+ * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.amketty.tk
+ * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
+ * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/addons.md.
+
+
+To Delete (On k8s Management Server after root)
+====================================
+
+sudo su -
+
+1) export KOPS_STATE_STORE=s3://demo.k8s.amketty.tk
+2) kops delete cluster --name demo.k8s.amketty.tk --yes
+
+

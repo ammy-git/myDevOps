@@ -1,0 +1,38 @@
+Step 1 — Installing MySQL
+--------------------------
+sudo apt-get update -y
+sudo apt-get install mysql-server -y
+
+Step 2 — Configuring MySQL
+-----------------------------
+mysql_secure_installation
+
+Step 3 — Testing MySQL
+-----------------------
+systemctl status mysql.service
+systemctl stop mysql.service
+systemctl status mysql.service
+systemctl start mysql.service
+systemctl enable mysql.service
+systemctl restart mysql.service
+
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
+
+SHOW VARIABLES LIKE 'validate_password%';
+
+1.
+SET GLOBAL validate_password_policy=LOW;
+
+2.
+vi /etc/my.cnf
+[mysqld]
+validate_password_policy=LOW
+
+3.
+uninstall plugin validate_password;
+
+systemctl restart mysql.service
+
+user grant
+----------
+SHOW GRANTS FOR 'ayaz'@'localhost';

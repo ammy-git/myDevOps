@@ -1,0 +1,21 @@
+Ant
+----
+
+1. Ant doesn't have formal conventions, so we need to provide information of the project structure in build.xml file
+2. Ant is procedural, you need to provide information about what to do through code.You need to provide order.
+3. There is no life cycle in Ant.
+4. It is tool box.
+5. It is mainly a build tool.
+6. Ant script are not reusable.
+7. It is less preferred than Maven.
+
+
+Maven
+----------
+1. Maven has a convention to place source code,compiled code etc.So we don't need to provide information about the project structure in pom.xml file.
+2. Maven is declarative, everything you define in the pom.xml file.
+3. There is life cycle in Maven.
+4. It is a framework.
+5. It is mainly a project management tool.
+6. The maven plug-in are reusable.
+7. It is more preferrable than Ant.

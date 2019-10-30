@@ -1,0 +1,14 @@
+What is Build Lifecycle?
+---------------------------
+A Build Lifecycle is a well-defined sequence of phases, which define the order in which the goals are to be executed. 
+Here phase represents a stage in life cycle. As an example, a typical Maven Build Lifecycle consists 
+of the following sequence of phases.
+
+Build Phase	Description
+----------      -----------
+validate	Validates that the project is correct and all necessary information is available. This also makes sure the dependencies are downloaded.
+compile	 	Compiles the source code of the project.
+test		Runs the tests against the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed.
+package		Packs the compiled code in its distributable format, such as a JAR.
+install		Install the package into the local repository, for use as a dependency in other projects locally.
+deploy		Copies the final package to the remote repository for sharing with other developers and projects.

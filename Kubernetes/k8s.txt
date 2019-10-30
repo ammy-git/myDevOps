@@ -1,0 +1,202 @@
+Suggestions:
+ * list clusters with: kops get cluster
+ * edit this cluster with: kops edit cluster demo.k8s.ayazcloudexpert.tk
+ * edit your node instance group: kops edit ig --name=demo.k8s.ayazcloudexpert.tk nodes
+ * edit your master instance group: kops edit ig --name=demo.k8s.ayazcloudexpert.tk master-ap-south-1b
+
+Finally configure your cluster with: kops update cluster --name demo.k8s.ayazcloudexpert.tk --yes
+
+
+
+Suggestions:
+ * validate cluster: kops validate cluster
+ * list nodes: kubectl get nodes --show-labels
+ * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.ayazcloudexpert.tk
+ * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
+ * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/addons.md.
+
+export KOPS_STATE_STORE=s3://demo.k8s.ayazcloudexpert.tk
+
+kops rolling-update cluster
+
+kops delete cluster demo.k8s.ayazcloudexpert.tk --yes
+
+
+kops create cluster --cloud=aws --zones=ap-south-1b --name=demo.k8s.ayazcloudexpert.tk --dns-zone=ayazcloudexpert.tk --dns private
+
+ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.ayazcloudexpert.tk
+
+ssh-keygen -f "/root/.ssh/known_hosts" -R "api.demo.k8s.ayazcloudexpert.tk"
+
+ssh to admin
+---------------
+ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.ayazcloudexpert.tk
+
+become root sudo su -
+
+kubectl get pods
+kubectl get deploy
+kubectl get deployments
+kubectl get services
+
+kubectl run sample-nginx --image=nginx --replicas=2 --port=80
+kubectl get pods -o wide
+
+nohup kubectl proxy --address  13.232.122.166 --port=8005 --accept-hosts '.*' &
+kubectl proxy --address 13.232.122.166 --port=9999 --accept-hosts='^*$'
+
+kubectl -n kube-system get service kubernetes-dashboard
+
+kubectl expose deployment sample-nginx --port=80 --type=LoadBalancer
+kubectl get services
+kubectl get services -o wide
+(you will get port no,from which outside world can access appn)
+
+we can access outside:
+http://<master-node-public-ip>:port
+http://<master-node-dns-name>:port
+( open port in security group attache to master )
+
+to delete pod
+-----------------
+kubectl delete pod <podname>
+
+so In real world we create services,pods and deployment through YAML file only
+-----------------------------------------------------------------------------------
+
+wget https://raw.githubusercontent.com/ayazuddin007/Simple-DevOps-Project/master/Kubernetes/valaxy-service.yml
+wget https://raw.githubusercontent.com/ayazuddin007/Simple-DevOps-Project/master/Kubernetes/valaxy-deploy.yml
+
+kubectl apply -f valaxy-deploy.yml
+kubectl get deployments
+
+kubectl get services
+kubectl delete service <service name>
+
+
+To go into the pods
+-------------------------
+kubectl exec -it <podname> //bin/bash
+edit nginx
+nginx: /usr/share/nginx/html
+
+---------------------------------------------
+ssh from ansible server to master node
+--------------------------------------------
+Go to Asible-Server become ans-admin
+su - ansadmin
+copy .ssh/id_rsa.pub content
+
+Go to k8s server and ssh to master 
+ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.ayazcloudexpert.tk
+become root as sudo su -
+now root in master node
+
+copy is_rsa.pub conent to ssh/authorized key as 
+cat >> ~/.ssh/authorized_keys
+cat ~/.ssh/authorized_keys
+
+
+ssh from ansible server to master node
+
+ssh -i ~/.ssh/id_rsa <root user of master-node>@<master node public ip>
+ssh -i ~/.ssh/id_rsa root@13.232.122.166
+
+In Ansible server ansadmin
+
+sudo mkdir /opt/kubernetes
+cd opt/kubernetes
+
+create hosts file
+sudo vi hosts
+
+[ansible-server]
+localhost
+
+[kubernetes]
+13.233.118.73  // master-node public ip
+
+
+
+In /opt/kubernetes/   copy kubernetes-valaxy-deployment.yml kubernetes-valaxy-service.yml  
+
+sudo wget https://raw.githubusercontent.com/yankils/Simple-DevOps-Project/master/Kubernetes/kubernetes-valaxy-deployment.yml
+sudo wget https://raw.githubusercontent.com/yankils/Simple-DevOps-Project/master/Kubernetes/kubernetes-valaxy-service.yml
+
+sudo vi kubernetes-valaxy-deployment.yml
+
+ansible-playbook -i /opt/kubernetes/hosts /opt/kubernetes/kubernetes-valaxy-deployment.yml;
+ansible-playbook -i /opt/kubernetes/hosts /opt/kubernetes/kubernetes-valaxy-service.yml;
+
+ansible-playbook -i  /opt/kubernetes/hosts /opt/kubernetes/create-simple-devops-image.yml;
+
+
+
+
+
+
+Suggestions:
+ * list clusters with: kops get cluster
+ * edit this cluster with: kops edit cluster demo.k8s.ayazcloudexpert.tk
+ * edit your node instance group: kops edit ig --name=demo.k8s.ayazcloudexpert.tk nodes
+ * edit your master instance group: kops edit ig --name=demo.k8s.ayazcloudexpert.tk master-ap-south-1b
+
+Finally configure your cluster with: kops update cluster --name demo.k8s.ayazcloudexpert.tk --yes
+
+Suggestions:
+ * validate cluster: kops validate cluster
+ * list nodes: kubectl get nodes --show-labels
+ * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.demo.k8s.ayazcloudexpert.tk
+ * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
+ * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/addons.md.
+
+ssh-keygen -f "/root/.ssh/known_hosts" -R "api.demo.k8s.ayazcloudexpert.tk"
+
+
+
+kubectl proxy -p 8004 --address 0.0.0.0 --accept-hosts '.*'
+nohup kubectl proxy --address="13.235.90.126" -p 8004 --accept-hosts='^*$' &
+
+http://15.206.88.173:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+
+export KUBECONFIG=/etc/kubernetes/admin.conf
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml
+kubectl get pods --all-namespaces
+
+cat >> dashboard-admin.yaml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kube-system
+
+Enter
+ctrl+d
+
+kubectl apply -f dashboard-adminuser.yaml
+
+kubectl proxy --address 0.0.0.0 --accept-hosts '.*'
+
+13.127.163.20
+http://35.154.199.238:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+
+
+

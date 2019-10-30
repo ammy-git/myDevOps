@@ -1,0 +1,86 @@
+Prequisite
+--------------
+Windows10 64 bit OS
+java above 7
+
+Download java jdk 10.0.2
+-----------------------
+Go to https://www.oracle.com/java/technologies/java-archive-javase10-downloads.html
+or
+type java jdk 10 in brower google search engine
+click on second link
+Go to Download > Java SE Development Kit 1ja0.0.2
+Agree License Agreement,sinup with oracle account,Download
+
+Install java jdk 10.0.2
+--------------------------
+Install java jdk-10.0.2
+Click on jdk-10.0.2_windows-x64_bin.exe > Install Java
+
+Go to 
+C:\Program Files\Java
+C:\Program Files\Java\jdk-10.0.2\bin
+C:\Program Files\Java\jre-10.0.2\bin
+
+Set system variable
+----------------------
+click on control panel > System > Advanced System Setting > Enviroment Variable
+
+Sytem Variable Section > Select Path > Edit > Right Side Click New > Paste Above jdk bin path > Right Side Click New > Paste Above jre bin path > ok
+
+set JAVA_HOME > click New in Sytem Variable Section > New System Variable > Set Variable Name as JAVA_HOME > variable values as java jdk path > ok
+
+Verify java installation & Environment Variable
+-----------------------------------------------
+Open Window command prompt & paste  
+	java -version
+check java home 
+	echo %JAVA_HOME%
+
+So, Java installed Successfully....
+
+Download Jenkins
+-------------------
+Go to http://jenkins.io
+Download > LTS 	> Windows 
+Extract jenkins-2.176.2.zip > Run > Open into browser > see the url of jenkins
+    http://localhost:8080
+Set Initial Password > Go to C:\Program Files (x86)\Jenkins\secrets > Open initialAdminPassword as Notepad > Copy encypted password > Paste it in browser jenkins >
+Install Custom Plugin > Set Username & Password > Next > Redirect to Jenkins Dashboad
+set java system vaiable also in jenkins > Manage Jankins > Global Tools Configuration > java jdk
+Java
+C:\Program Files\Java\jdk-10.0.2
+
+Download Maven
+------------------
+Go to https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/
+Download apache-maven-3.3.9.zip > Unzip > Rename as apache-maven-3.3.9
+Create Maven Folder in C:/ProgramFiles
+Paste above apache-maven-3.3.9 in C:/ProgramFiles
+
+Set Envrionmebt Varible as 
+M2_HOME
+C:\Program Files\Maven\apache-maven-3.3.9
+
+MAVEN_HOME
+C:\Program Files\Maven\apache-maven-3.3.9
+
+M2
+C:\Program Files\Maven\apache-maven-3.3.9\bin
+
+Click on path > Edit > New > Paste 
+C:\Program Files\Maven\apache-maven-3.3.9\bin
+
+Open Command Prompt
+check maven version
+ 	mvn -version
+check maven system variable path
+        echo %M2_HOME%
+
+set this system vaiable also in jenkins > Manage Jankins > Global Tools Configuration > Maven
+Maven
+C:\Program Files\Maven\apache-maven-3.3.9
+
+
+
+

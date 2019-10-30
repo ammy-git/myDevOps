@@ -1,0 +1,65 @@
+1. create first-maven-project directory in E:\devops\maven\project
+2. go to directory first-maven-project 
+3. copy the directory full path as E:\devops\maven\project\first-maven-project
+4. click shift+right click , choose command prompt
+5. in cmd prompt,
+   mvn archetype:generate 
+
+Archetype is a Maven plugin whose task is to create a project structure as per its template.
+So,We can create perfect directory structure.check internet connection.
+So,maven going to download archetype plugin required for the project,first maven will search locally,if not found,
+then daownloading plugin from central repository and store it in location as below:
+   ${user.home}\.m2\repository
+   C:\Users\dell\.m2\repository
+For,Next time if we already have this plugin.So,Maven will not download this plugin.
+so you will se some numbers with description in cmd,it is avalable archetypes in which you have to choose one archetype.
+Maven will bydefault choose archetype as 1388
+to create project template will source and test classes.
+it will show you,
+
+Choose org.apache.maven.archetypes:maven-archetype-quickstart version:
+1: 1.0-alpha-1
+2: 1.0-alpha-2
+3: 1.0-alpha-3
+4: 1.0-alpha-4
+5: 1.0
+6: 1.1
+Choose a number: 6:
+
+select 6
+
+Maven will ask for the project detail.
+
+Define value for property 'groupId': : com.codebind
+Define value for property 'artifactId': : my-maven-project
+Define value for property 'version': 1.0-SNAPSHOT:
+Define value for property 'package': com.codebind.demo
+
+Maven will ask for the project detail confirmation. Press enter or press Y.
+Now Maven will start creating the project structure and will display.
+
+[INFO]-----------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO]-----------------------------------------------
+
+
+
+project java files will be created in com/codebind/demo
+
+Now go to E:\devops\maven\project\first-maven-project. You'll see a java application project created, 
+named my-maven-project, which was given as artifactId at the time of project creation
+
+jar will be named as after build:
+artifaceId-version.extension
+eg: my-maven-project-1.0-SNAPSHOT.jar
+
+Created POM.xml
+----------------
+<modelVersion>4.0.0</modelVersion>
+<groupId>com.codebind</groupId>
+<artifactId>my-maven-project</artifactId>
+<version>1.0-SNAPSHOT</version>
+
+Downloading web application
+---------------------------
+mvn archetype:generate -DgroupId = com.companyname.automobile -DartifactId = trucks -DarchetypeArtifactId = maven-archetype-webapp -DinteractiveMode = false

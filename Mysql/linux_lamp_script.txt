@@ -1,0 +1,54 @@
+#!/bin/bash
+yum install httpd php php-mysql -y
+echo "healthy" > /var/www/html/healthy.html
+wget https://wordpress.org/latest.tar.gz
+tar -xzf latest.tar.gz
+cp -r wordpress/*  /var/www/html
+rm -rf wordpress 
+rm -rf latest.tar.gz
+chmod -R 755 wp-content
+chown -R apache:apache wp-content
+wget https://s3.amazonaws.com/bucketforwordpresslab-donotdelete/htaccess.txt
+mv htaccess.txt .htaccess
+service httpd start
+chkconfig httpd on
+
+
+Installig Lamp on Amazon linux
+-------------------------------------
+yum update -y
+amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+yum install -y httpd mariadb-server
+echo "<?php phpinfo(); ?>" > /var/www/html/index.php
+systemctl start httpd
+systemctl enable httpd
+systemctl is-enabled httpd
+
+In a web browser, type the URL 
+-------------------------------------------------------
+http://<public-ip/dns-name>/index.php
+
+To secure the MariaDB server
+---------------------------------
+systemctl start mariadb
+mysql_secure_installation
+systemctl stop mariadb
+systemctl enable mariadb
+
+To install phpMyAdmin
+------------------------
+yum install php-mbstring -y
+systemctl restart httpd
+systemctl restart php-fpm
+cd /var/www/html
+wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
+mkdir phpMyAdmin && tar -xvzf phpMyAdmin-latest-all-languages.tar.gz -C phpMyAdmin --strip-components 1
+rm -rf phpMyAdmin-latest-all-languages.tar.gz
+systemctl start mariadb
+
+In a web browser, type the URL of your phpMyAdmin
+-------------------------------------------------------
+http://<public-ip/dns-name>/phpMyAdmin
+
+Log in to your phpMyAdmin installation with the root user name and the MySQL root password you created earlier.
+

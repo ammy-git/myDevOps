@@ -1,0 +1,124 @@
+Steps in creating a jar file
+-----------------------------
+1) App.java --> App.class              i.e compile source file (java file) and covert them to class file
+2) AppTest.java --> AppTest.class      i.e compile test file and covert them to class file
+3) Run Test                            i.e running the test if any error ocuured,then worked on them
+4) Create jar                          i.e finally creating a jar file
+
+Open the eclipse
+Select project in project explorer i.e maven-demo
+Right click on maven-demo project > properties > copy the project folder path > open the project folder
+Remove the fail("Not yet implemented") statement from AppTest.java file so that our test will not get failed.
+See there is a target folder which contains compiled App and AppTest class files.
+
+mvn clean 
+----------
+clean our project for previous build i.e means removing target folder
+right click on maven-demo project > Run As > Maven build... > Edit Configuration window > 
+	Goals: clean   i.e same as writing mvn clean in cmd prompt
+click Run
+Go your maven-demo project folder -> see target folder will be get deleted.
+	
+mvn compile
+-------------
+First creates a target folder
+Then in target folder,it creates a class file (App.class) from our source code file (App.java)
+
+errors: No compiler is provided in this environment. Perhaps you are running on a JRE rather than a JDK?
+--------
+url : https://stackoverflow.com/questions/19655184/no-compiler-is-provided-in-this-environment-perhaps-you-are-running-on-a-jre-ra
+solution:
+1. On your Eclipse IDE, go into Window > Preferences > Java > Installed JREs > and check your installed JREs. You should have an entry with a JDK there.
+2. Select the Execution Env as show below. Click OK
+3. Then Right-Click on your Project -> Maven -> Update Project
+ 
+error: Error assembling WAR: webxml attribute is required (or pre-existing WEB-INF/web.xml if executing in update mode)
+
+Add this in pom.xml
+------------------------
+
+<build>
+        <plugins>
+             <plugin>
+    	<artifactId>maven-war-plugin</artifactId>
+    	<version>2.6</version>
+                  <configuration>
+             	    <failOnMissingWebXml>false</failOnMissingWebXml>
+                  </configuration>
+             </plugin>
+      </plugins>
+</build>
+
+errors: Source option 5 is no longer supported. Use 6 or later.
+------  Target option 1.5 is no longer supported. Use 1.6 or later.
+url : https://github.com/jflex-de/jflex/issues/400
+solution: 
+I think this means that
+You are using JDK9 or later
+Your project uses maven-compiler-plugin with an old version which defaults to Java 5.
+ 
+You have three options to solve this
+
+1.Downgrade to JDK7 or JDK8 (meh)
+2.Use maven-compiler-plugin version or later
+3.Indicate to the maven-compiler-plugin to use source level 6 and target 6 (or later).
+
+ Add this in pom.xml
+------------------------
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+
+mvn test-compile
+----------------
+going to compile test 
+it creates a class file (AppTest.class) from our source code file (AppTest.java)
+
+mvn test
+--------
+run the test and generates test cases in the form of generating surefire reports folder in target folder 
+
+mvn install
+------------
+creates a jar file in target folder
+named as maven-demo-0.0.1-SNAPSHOT.jar
+         artifaceId-version.jar
+
+
+same steps using command line
+-------------------------------
+Go to project folder E:\devops\maven\project\my-maven-project 
+see there is no target folder
+After giving mvn install command target folder will be created
+
+click on shift+rightclick > opene the cmd prompt
+
+mvn clean
+mvn validate
+mvn compile
+mvn test-compile
+mvn test
+mvn install
+
+my-maven-project-1.0-SNAPSHOT.jar 
+artifaceId-version.jar
+

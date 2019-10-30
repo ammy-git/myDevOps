@@ -1,0 +1,146 @@
+
+prequisites
+-------------
+1.Launch new amazon ec2 linux instance named as Tomcat-Server
+2. java jdk-1.8
+
+Root user
+----------
+sudo su -
+yum update -y
+source ~/.bash_profile (When jdk in already installed)
+
+Install Java
+-------------
+yum install java-1.8* -y
+
+
+Confirm Java Version
+------------------------
+java -version
+
+# To check java jdk file
+find /usr/lib/jvm/java-1.8* | head -n 3
+
+# Lets set the java home
+JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.201.b09-0.amzn2.x86_64
+PATH=$PATH:$JAVA_HOME
+export $PATH
+
+# To set it permanently update your .bash_profile
+source ~/.bash_profile
+
+
+Create Tomcat directory
+------------------------
+mkdir /opt/tomcat
+cd /opt/tomcat
+
+Download Tomcat 
+------------------
+Download tomcat packages from https://tomcat.apache.org/download-80.cgi onto /opt on EC2 instance
+
+wget http://apachemirror.wuchna.com/tomcat/tomcat-8/v8.5.46/bin/apache-tomcat-8.5.46.tar.gz
+tar -zvxf apache-tomcat-8.5.46.tar.gz
+rm -rf apache-tomcat-8.5.46.tar.gz
+
+# To check tomcat is running or not
+ps -ef | grep tomcat 
+
+Give Permission to start and stop
+----------------------------------
+cd apache-tomcat-8.5.46/bin
+ll
+chmod +x startup.sh shutdown.sh
+ll
+
+Creating Soft link for startup.sh and shutdown.sh on Root
+--------------------------------------------------------
+cd
+ln -s /opt/tomcat/apache-tomcat-8.5.46/bin/startup.sh tomcatup
+ln -s /opt/tomcat/apache-tomcat-8.5.46/bin/shutdown.sh tomcatdown
+ls
+ll
+
+Starting Tomcat
+-------------------
+./tomcatup
+
+Stopping Tomcat
+---------------------
+./tomcatdown
+
+check point 
+---------------
+access tomcat application from browser on port 8080
+http://<Public_IP>:8080
+Now Page is still loading
+So Allow port 8080 in Security group
+Now you will get tomacat homepage
+
+Changing port (8080-8090)
+---------------------------
+Both,tomcat and Jenkins runs on ports number 8080.Hence lets change tomcat port number to 8090.
+Change port number in conf/server.xml file under tomcat home
+
+cd /opt/tomcat/apache-tomcat-8.5.46/conf
+ls
+vi server.xml
+
+# update port number in the "connecter port" field in server.xml
+# restart tomcat after configuration update
+
+./tomcatdown
+./tomcatup
+
+tomcat on port 8080 is neither accessible nor on port 8090.
+So chanhe port 8080 to 8090 in Security group
+Now you will get tomcat homepage  
+http://<Public_IP>:8090
+
+click on Manager App
+we will get 403 Access Denied, because we are accessing tomcat outside of our linux instance
+so,to access login 
+changing a default parameter in context.xml does address this issue.
+
+#search for context.xml
+find / -name context.xml
+
+/opt/tomcat/apache-tomcat-8.5.46/conf/context.xml
+/opt/tomcat/apache-tomcat-8.5.46/webapps/host-manager/META-INF/context.xml
+/opt/tomcat/apache-tomcat-8.5.46/webapps/manager/META-INF/context.xml
+
+comment () Value ClassName field on files and  which are under webapp directory. 
+
+
+Update users information in the tomcat-users.xml file goto tomcat home directory and Add below users to conf/tomcat-user.xml file.
+cd /opt/tomcat/apache-tomcat-8.5.46/conf
+ls 
+vi tomcat-users.xml
+
+	<role rolename="manager-gui"/>
+	<role rolename="manager-script"/>
+	<role rolename="manager-jmx"/>
+	<role rolename="manager-status"/>
+	<user username="admin" password="TAdmin" roles="manager-gui, manager-script, manager-jmx, manager-status, admin-gui"/>
+	<user username="deployer" password="deployer" roles="manager-script"/>
+	<!-- <user username="tomcat" password="s3cret" roles="manager-gui"/> -->
+
+	Store : admin as TAdmin
+	password: TAdmin
+
+Now you can login to server status, manager app,but not login to host manager
+simply add admin-gui role for admin.stop ans start tomcat.Now its working.
+Go to Tomcat dashboard click on Server Status or Manager App or Host Managet ,dialogue box will open,provide admin credentials and login.
+
+ 
+To access webapps
+------------------
+cd /opt/tomcat/apache-tomcat-8.5.46/webapps/
+mkdir test
+echo  "Hi ayaz" > test/index.html
+go to Manager App .See their test App folder.click on test folder.
+
+http://<Public_IP>:8090/test
+
+undeploy will delete test app from webapp folder.

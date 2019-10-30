@@ -1,0 +1,97 @@
+1. Maven popular IDES now a days are eclipse,netbeans and inteligense.
+2. We will use eclipse with integrated support for creating maven project.
+
+3. File > New > Project > New Project Window > Select Maven > Select Maven Project > Next >
+   New Maven Project Window > Checked on create simple project (skip archetype selection) > Next > New Window
+   Enter a group id for the artifact.
+   Group Id: com.codebind
+   Artifact Id: maven-demo
+   Version: 0.0.1-SNAPSHOT
+   Package: jar
+   click on Finish
+
+4. In Left side Project Explorer. maven-demo project is created with hirerchy.
+   src/main/java -- source code file
+   src/main/resources -- resources for source code
+   src/test/java -- test code file
+   src/test/resources -- resources for test code
+   src - souce folder
+   target - target folder where build jar file will be stored
+   pom.xml - contains current working project infomation
+
+5. Now creating class
+   right click on src/main/java > New > Class > New Window Java Class
+   Package: com.codebind
+   Name: App
+   Modifiers: public
+   check on public static main option in which method stubs
+   click on Finish
+
+   Above setting will create App.java class in com.codebind package of src/main/java
+   In App.java Code:
+
+	package com.codebind;
+
+	public class App {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+        System.out.println("Welcome to maven-demo project");
+	}
+
+	}
+
+   click on save.
+
+7.  right click on src/test/java > New > Others > select Java > JUnit > JUnit Test Case > Next > JUnit Test Case Window
+    Package: com.codebind
+    Name: AppTest
+    click on Finish > Do not Add Jnit 4 Library  to build path window > choose Not Now > ok 
+    
+    Above setting will create AppTest.java class in com.codebind package src/test/java
+    In AppTest.java Code:
+
+	package com.codebind;
+	import static org.junit.Assert.*;
+	import org.junit.Test;
+
+	public class AppTest {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+
+	}
+
+8. So In above AppTest.java file , we will get bunch of erros on left side in the form of red cross sign,
+   It is happening,because there is no JUnit jar file in build path.
+   Maven will allowed us to download JUnit jar files and added as dependecy in the form of dependencies element in pom.xml of our project.
+   
+   pom.xml
+   -------
+   <dependencies> </dependencies>
+   Inside above dependecies ,we will add JUnit jar file dependencies to compile our project surce code.
+   Maven has online repositories from which we download dependencies here.
+   Open browser, search for maven junit dependency 
+   so click on first link, we will se Junit with differenent version.
+   So choose top version dependency as JUnit » 4.13-beta-3
+   Maven dependency tag.Now add that copied data in pom.xml as below
+
+   <project>
+     <dependencies>
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.13-beta-3</version>
+	    <scope>test</scope>
+	</dependency>
+    </dependencies>
+   </project>
+
+   click on save,So the dependences will be added, errors will be removed from AppTest.java file, you can see Maven Dependcies in right side in maven-demo folder in  Project Explorer.
+   If Removed dependency tag, Maven Dependcies will get removed.
+   Now go to AppTest.java file, all errors will be get removed.
+  
+   
+    

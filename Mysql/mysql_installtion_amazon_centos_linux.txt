@@ -1,0 +1,162 @@
+
+Amazon linux
+----------------
+
+Step 1 — Installing MySQL
+----------------------------
+
+visit : https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-centos-7
+        https://tecadmin.net/install-mysql-8-on-centos/
+
+https://dev.mysql.com/downloads/repo/yum/
+
+wget https://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm
+
+md5sum mysql57-community-release-el7-9.noarch.rpm
+
+sudo rpm -ivh mysql57-community-release-el7-9.noarch.rpm
+
+sudo yum install mysql-server -y
+
+Step 2 — Starting MySQL
+-------------------------
+sudo systemctl start mysqld
+
+sudo systemctl status mysqld
+
+During the installation process, a temporary password is generated for the MySQL root user. Locate it in the mysqld.log with this command:
+
+sudo grep 'temporary password' /var/log/mysqld.log
+
+A temporary password is generated for root@localhost: -3*_!vAcUr:x
+
+Step 3 — Configuring MySQL
+-----------------------------
+sudo mysql_secure_installation
+It will prompt for few question’s, we recommended to say yes ( y ) for each.
+
+Enter password for user root: <root temp password>
+ 
+The existing password for the user account root has expired. Please set a new password.
+
+New password: <root temp password>
+Re-enter new password: <root temp password>
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+
+Step 4 — Removeing validate password validation
+------------------------------------------------
+vi /etc/my.cnf
+
+validate-password=off
+
+systemctl restart mysqld
+
+Log in to the mysql
+-----------------------
+mysql -u root -p
+enter password: <root temp password>
+
+Set a new MySQL root password
+---------------------------------
+use mysql;
+
+update user set authentication_string=PASSWORD("root123") where User='root';
+
+flush privileges;
+
+quit
+
+Log in to the mysql
+-----------------------
+mysql -u root -p
+enter password: root123
+
+List MySQL Users
+--------------------
+select User FROM mysql.user;
+select User, Host from mysql.user;
+
+
+
+Create a New User
+----------------------
+CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+
+GRANT type_of_permission ON database_name.table_name TO ‘username’@'localhost’;
+GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+FLUSH PRIVILEGES;
+
+REVOKE type_of_permission ON database_name.table_name FROM ‘username’@‘localhost’;
+SHOW GRANTS username;
+DROP USER ‘username’@‘localhost’;
+quit
+
+Login with new user
+----------------------
+mysql -u [username] -p
+
+
+Show Total databases
+---------------------
+SHOW DATABASES;
+
+Create Databases
+------------------
+CREATE DATABASE database name;
+DROP DATABASE database name;
+
+Access a MySQL Database
+-----------------------
+USE database name;
+
+Show Total Tables
+--------------------
+SHOW tables;
+
+Create a MySQL Table
+----------------------
+CREATE TABLE potluck (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+name VARCHAR(20),
+food VARCHAR(30),
+confirmed CHAR(1), 
+signup_date DATE);
+
+Show table Structure
+--------------------
+DESCRIBE potluck;
+
+Selecting A Data
+-----------------
+SELECT count(*) FROM potluck;
+SELECT * FROM potluck;
+
+Inserting A Record
+---------------------
+INSERT INTO `potluck` (`id`,`name`,`food`,`confirmed`,`signup_date`) VALUES (NULL, "John", "Casserole","Y", '2012-04-11');
+INSERT INTO `potluck` (`id`,`name`,`food`,`confirmed`,`signup_date`) VALUES (NULL, "Sandy", "Key Lime Tarts","N", '2012-04-14');
+INSERT INTO `potluck` (`id`,`name`,`food`,`confirmed`,`signup_date`) VALUES (NULL, "Tom", "BBQ","Y", '2012-04-18');
+INSERT INTO `potluck` (`id`,`name`,`food`,`confirmed`,`signup_date`) VALUES (NULL, "Tina", "Salad","Y", '2012-04-10');
+
+Updating a Record
+-------------------
+UPDATE `potluck`  SET `confirmed` = 'Y' WHERE `potluck`.`name` ='Sandy'; 
+
+Add and Delete a Column
+--------------------------
+ALTER TABLE potluck ADD email VARCHAR(40);
+
+ALTER TABLE potluck ADD email VARCHAR(40) AFTER name; 
+
+ALTER TABLE potluck DROP email;
+
+Delete a Row
+---------------
+DELETE from potluck  where name='Sandy';
+

@@ -1,0 +1,331 @@
+Jira Installation on Linux
+=========================
+
+Prequisite:
+---------------
+1. Amazon EC2 Instance with t2.small
+2. Install java jdk 1.8
+3. Mysql Server Database
+4. Bydefualt Jira runs on port no 8080 but we can change port on installation time
+
+
+Launch Amazon EC2 Linux
+--------------------------------
+AMI: Amazon Ec2
+Type: t2.small
+Tag  name: Jira-Server
+Security-Group: Jira-SG
+  ssh  22 
+  tcp custom rule 8080
+  mysql/Aurora  3306 (Jira to mysql db connection)
+
+
+Login in Amazon EC2 Instance (Jira-Server)
+----------------------------------------------
+
+1. Become root user
+   sudo su -
+   yum update -y
+
+2. Install Java and Set JAVA_HOME path
+
+  Install:
+ ----------
+	yum install java-1.8* -y
+	java -version
+   Find:
+------------	
+	find /usr/lib/jvm/java-1.8* | head -n 3
+	
+  Set JAVA_HOME
+--------------------
+	vi .bash_profile
+	
+	JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.amzn2.0.1.x86_64
+	PATH=$PATH:$JAVA_HOME
+	export PATH
+
+  To set permanently
+-------------------------
+	source ~/.bash_profile
+	echo $JAVA_HOME
+
+3.Install Mysql-server
+	Go to E:\devops\server\DBServer\Mysql\files 
+	open mysql_installtion_amazon_centos_linux.txt file and perform installation
+
+	vi /etc/my.cnf
+
+	validate-password=off
+	default-storage-engine=INNODB
+	character_set_server=utf8mb4
+	innodb_default_row_format=DYNAMIC
+	innodb_large_prefix=ON
+	innodb_file_format=Barracuda
+	innodb_log_file_size=512M
+	
+	systemctl restart mysqld
+
+	mysql -u root -p
+	root123
+	use mysql;
+
+	CREATE DATABASE jiradb CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+	show databases;
+	CREATE USER 'jirauser'@'localhost' IDENTIFIED BY 'jira123';
+	select User, Host from mysql.user;
+	GRANT ALL PRIVILEGES ON jiradb . * TO 'jirauser'@'localhost';
+	FLUSH PRIVILEGES;
+	exit
+
+	mysql -u  jirauser  -p
+	jira123
+	show databases;
+	(only one database- jiradb)
+
+4. Download jira
+-------------------
+# Create jira directory in /opt
+	mkdir /opt/jira
+	cd /opt/jira
+
+# Download Jira
+	Go to https://www.atlassian.com/software/jira/download
+	select linux 64 bit
+	Right click on Download > Pop Up > 
+	Right Click on Installer Plugin > Copy Link Address
+	(Its a trial version for 30 days only)
+	
+# Install Jira
+	wget https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-8.5.0-x64.bin      (Jira Core)
+	wget https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-8.5.0-x64.bin      (Jira Software)
+
+# Apply Execute Mode
+	ll -a
+	chmod +x atlassian-jira-software-8.5.0-x64.bin
+	ll -a
+
+# Run atlassian-jira-software-8.5.0-x64.bin file
+	./atlassian-jira-software-8.5.0-x64.bin
+
+This will install JIRA Software 8.5.0 on your computer.
+OK [o, Enter], Cancel [c]
+o
+
+Please choose one of the following:
+Express Install (use default settings) [1], Custom Install (recommended for advanced users) [2, Enter], Upgrade an existing JIRA installation [3]
+2
+
+Select the folder where you would like JIRA Software to be installed.
+Where should JIRA Software be installed?
+[/opt/atlassian/jira]
+
+Default location for JIRA Software data
+[/var/atlassian/application-data/jira]
+
+Configure which ports JIRA Software will use.
+JIRA requires two TCP ports that are not being used by any other
+applications on this machine. The HTTP port is where you will access JIRA
+through your browser. The Control port is used to startup and shutdown JIRA.
+Use default ports (HTTP: 8080, Control: 8005) - Recommended [1, Enter], Set custom value for HTTP and Control ports [2]
+
+JIRA can be run in the background.
+You may choose to run JIRA as a service, which means it will start
+automatically whenever the computer restarts.
+Install JIRA as Service?
+Yes [y, Enter], No [n]
+y
+
+Details on where JIRA Software will be installed and the settings that will be used.
+Installation Directory: /opt/atlassian/jira
+Home Directory: /var/atlassian/application-data/jira
+HTTP Port: 8080
+RMI Port: 8005
+Install as service: Yes
+Install [i, Enter], Exit [e]
+i
+
+Installation of JIRA Software 8.5.0 is complete
+Start JIRA Software 8.5.0 now?
+Yes [y, Enter], No [n]
+n
+
+Installation of JIRA Software 8.5.0 is complete
+Your installation of JIRA Software 8.5.0 is now ready.
+Finishing installation ...
+
+# Install mysql-connector-java
+(We need the Java connector for Jira to communicate to the SQL database, download it and move it to the correct place.)
+	
+	wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.48.tar.gz
+	tar -zvxf mysql-connector-java-5.1.48.tar.gz
+	ls
+	cd mysql-connector-java-5.1.48
+	cp mysql-connector-java-5.1.48-bin.jar /opt/atlassian/jira/lib/
+	cd /opt/atlassian/jira/lib/
+	cd -
+
+5.Start and stop jira
+--------------------------
+	cd /opt/atlassian/jira/bin
+	./shutdown.sh
+	./startup.sh
+
+6. Access on Browser
+---------------------------
+	http://<Jira-Server Public IP>:8080
+
+7. Jira setup
+-----------------
+	click on I'll set it up myself
+
+8. Database setup
+----------------------
+	select My Own Database (recommended for production environments)
+	Open port 3306 in Jira-SG.
+	
+	Database Type: MySQL 5.7+
+	Hostname: localhost
+	Port: 3306
+	Database: jiradb
+	Username: jirauser
+	Password: jira123
+
+	Click on Test Connection: if Successful then proceed.
+	
+If Connection lost,or jira not connected,
+--------------------------------------------
+
+a. Configuration tool Jira DB xml file
+-----------------------------------------
+	/var/atlassian/application-data/jira/dbconfig.xml
+
+b. Restart mysql-server and jira
+-------------------------------
+	systemctl restart mysqld
+	cd /opt/atlassian/jira/bin
+	./startup.sh
+	./startup.sh status
+
+9.  Set up application properties
+------------------------------------
+	Application Title: JiraApp
+	Mode: Public
+	Base URL:  http://<Jira-Server Public IP>:8080
+	click on Next
+
+10. Specify your license key
+------------------------------
+click on generate a Jira trial license at MyAtlassian
+Please enter your license key
+Server ID: <Copy Server ID and save somewhere>
+Your License Key: 
+	
+11. Login to Atlassian
+--------------------------
+Enter Email : <gmail id>
+Next
+
+12. Sign up for your account
+-------------------------------
+Email: <gmail id>
+Full Name: <Full Name>
+Create Password: <Password>
+click on Sign Up
+
+13. Verfify your Email
+------------------------------
+Go to your mail id ,open mail and click on Verify my email address button.
+
+14. Complete step no 10
+-----------------------------
+Enter your Server ID and generate trial license.
+click on Trial License
+
+	Product: Jira Core
+	License type:  Jira Core (Server)
+	Organization: Devops
+	Your instance is: up and running
+	Server ID: <Enter Server ID>
+	Click on Generate License
+	
+Lincense key Generated ,copy lincense key ,save somewhere and paste it in step no 10
+	
+Informarion
+--------------
+To get your Server ID:
+
+Log in as a JIRA administrator
+Click on the Settings icon and choose System
+Click on the System info link
+Your Server ID is listed in the JIRA info section
+Please note we only provide trial support for 90 days per product.
+
+15. Links Fails
+---------------------
+Again type in browser
+	http://<Jira-Server Public IP>:8080
+Jira Set up will started and completed
+
+16. Set up administrator account
+-------------------------------------
+	Full Name: <Enter Name>
+	Email Address: <Gmail Email ID> 
+	User Name: <.User Name>
+	Password: <Password>
+	Confirm Password: <Password>		
+click on Next
+
+17. Set up email notifications
+--------------------------------
+Configure Email Notifications: Now
+Finish
+	Name: Default SMTP Server
+	From address : <Gmail Email ID>
+	Email prefix: [JIRA]
+	Server Type: SMTP Host
+	Service Provider: Custom
+	Host Name: smtp.gmail.com
+	Protocol: SMTP
+	SMTP Port: 465
+	Timeout: 10000
+	Username: <GMAIL Email ID> (enable less secure App in Gmail)
+	Password: <GMAIL Password>
+Click on Test Connection
+If No Error, Click on Finish
+
+18. Jira Welcome Page
+----------------------------
+Welcome to Jira, Ayazuddin!
+Select Language: English > Next
+choose an avatar > Next
+
+19.Create Project
+--------------------
+Create project
+Choose Project Management > Next
+Project Management
+	Name: TestProject
+	Key:TEST
+click on Ok.
+Go to Dashboard
+Logout As Administator.
+
+20. To Again Access Jira
+-----------------------------
+
+http://<Jira-Server Public IP>:8080
+Username: <Your Username>	i.e. Ayazuddin	
+Password: <Your Gmail Password>	
+
+
+
+
+
+
+
+
+	
+
+
+

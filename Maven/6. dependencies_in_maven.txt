@@ -1,0 +1,53 @@
+Transitive Dependencies
+--------------------------
+If your project depends on a dependency, say Dependency ABC, and Dependency ABC itself depends on another dependency, say Dependency XYZ, 
+then your project has a transitive dependency on Dependency XYZ.
+
+In our maven-demo peoject > Maven Depencies > 2 dependencies
+junit and hamcrest-core dependebcies
+open pom.xml > Dependencies Hirerchy
+so you will se that junit depends on hamcrest-core dependency.
+So,we can call it transitive dependency.
+hold ctrl key  and hover on depency in pom.xml and click on that hovered depenency,it will that dependenc pom file
+i.e hover on junit will open junit pom file
+
+Exclude Dependency
+-------------------
+Download hibernate dependencies from internet
+
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>4.1.4.Final</version>
+</dependency>
+
+Lets say we want to exclude jboss-logging dependency
+so to do that hover and right click on hibernate dependency, it will open hinernate pom file
+copy jobss-logging dependedencies group-id and artifact id and paste it in pom.xml below. 
+
+		<dependency>
+    		<groupId>org.hibernate</groupId>
+    		<artifactId>hibernate-core</artifactId>
+   			 <version>4.1.4.Final</version>
+   			 <exclusions>
+   			 	<exclusion>
+   			 		<groupId>org.jboss.logging</groupId>
+     			    		<artifactId>jboss-logging</artifactId>
+   			 	</exclusion>
+   			 </exclusions>
+		</dependency>	
+save that pom.xml you will see that jboss-logging dependency is excluded that from hibernate dependency.
+if removed exclusions tag,save it then u will see jboss-logging dependency in hibernate dependency.
+
+Scope dependency
+------------------
+in pom.xml file
+
+		<dependency>
+		   <groupId>junit</groupId>
+	  	   <artifactId>junit</artifactId>
+	 	   <version>4.13-beta-3</version>
+	 	   <scope>test</scope>
+		</dependency>
+
+it means that scope dependency is available on for test file.

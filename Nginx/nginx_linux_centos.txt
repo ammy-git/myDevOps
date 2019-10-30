@@ -1,0 +1,96 @@
+Php Installation
+--------------------------
+amazon-linux-extras install -y php7.2
+yum remove amazon-linux-extras php* -y
+
+
+Nginx Install on amazon linux
+--------------------------------
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+sudo yum install -y epel-release
+sudo yum update -y
+sudo yum install nginx -y
+nginx -v
+
+service nginx stop
+service nginx status
+service nginx start
+
+vi  /etc/nginx/nginx.conf  -- configuration file
+cd /usr/share/nginx/html  -- index path
+
+vi /etc/nginx/conf.d/default.conf  // create default configuration file
+comment listen in /etc/nginx/nginx.conf
+
+paste following code in default.conf
+-------------------------------------
+server {
+    listen 80 default_server;
+
+    root /var/www/html;
+
+    index index.html;
+
+    server_name __;
+
+    access_log /var/www/html/access.log;
+    error_log /var/www/html/error.log;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+service nginx restart
+
+
+
+server {
+    listen       80;
+    server_name  _;
+
+    # note that these lines are originally from the "location /" block
+    root   /var/www/html;
+    index index.php index.html index.htm;
+
+    access_log /var/www/html/access.log;
+    error_log /var/www/html/error.log;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /var/www/html;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+
+/etc/php-fpm.d/www.conf
+nginx -t
+
+
+nano /etc/php-fpm.d/www.conf
+Find and replace these lines:
+
+user = apache to user = nginx
+
+group = apache to group = nginx
+
+listen.owner = nobody to listen.owner = nginx
+
+listen.group = nobody to listen.group = nginx
+listen = /var/run/php-fpm/php-fpm.sock
+
+systemctl start php-fpm.service
+systemctl enable php-fpm.service
+systemctl start php-fpm.service
+systemctl enable php-fpm.service

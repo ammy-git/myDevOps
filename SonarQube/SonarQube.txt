@@ -1,0 +1,254 @@
+======================================================
+1) SonarQube Installation and Integration with Jenkins
+======================================================
+Prequisite
+-----------------
+- Amazon RHEL 8 t2.small instance
+- Mysql Client with java
+
+Install new RHEL 8 Amazon Instance
+----------------------------------------
+ Type: t2.small
+ Tag: Name-SonarQube-Server
+Security Group: SonarQube-SG                            (SonarQube Runs on port no 9000)
+
+SSH to SonarQube-Server
+-----------------------------
+# Become Root
+    sudo su -
+
+# Install Mysql Client Version and Java
+   yum install mysql java-1.8* -y
+   java -version  (openjdk version "1.8.0_222" )
+  mysql --version (mysql  Ver 8.0.17)
+
+# SonarQube Download,Installation and Configuration
+  1. Go to Official Website 
+       https://www.sonarqube.org/
+  2. Install wget and unzip package
+      yum install wget unzip -y
+  3. Go to opt directory
+      cd /opt
+  4. Download SonarQube LTS 6.7 Community Edition package
+      wget  https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.7.7.zip
+  5. unzip SonarQube
+      ls
+      unzip sonarqube-6.7.7.zip
+  6. Change sanarqube directory name
+     mv sonarqube-6.7.7 sonarqube
+  7. Remove sonarqube zip file
+     rm -rf  sonarqube-6.7.7.zip
+  
+# Create a user as sonaradmin to manage sonarqube directories
+    cd
+    useradd sonaradmin
+    passwd sonaradmin
+
+# Changing sonarqube folder ownership to sonaradmin user
+   cd  /opt
+   chown -R sonaradmin:sonaradmin sonarqube
+   ll -a
+
+We have given access to sonaradmin and done required configuration in SonarQube-Server  
+
+=========================================================================
+2) RDS database setup for SonarQube
+=========================================================================
+RDS Database: sonarqubedb
+RDS Username: sonarqubedb
+RDS Password: sonar123
+
+# SonarQube as a service
+become sonaradmin user
+ su - sonaradmin
+  
+# start sonar.sh and check status
+cd  /opt/sonarqube/bin/linux-x86-64/
+ ./sonar.sh start  
+ ./sonar.sh status
+
+# Access SonarQube from browser
+ http://<SonarQubeServer-PublicIP>:9000/sonar
+ 
+# SonarQube Bydefault Login Credentials
+   UN: admin
+   PASS: admin
+
+=============================================================================
+3) Sonar Sanner Integration with Jenkins Server
+=============================================================================
+
+#SSH to jenkins server
+ 1. become root user
+   sudo su - 
+
+2. Go to /opt dir
+  cd /opt
+
+3.  Download SonarQube Scanner
+   wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.0.0.1744-linux.zip
+   
+4. Install Unzip
+    yum install unzip -y
+
+ 5. Unzip Sonar Scanner
+   unzip sonar-scanner-cli-4.0.0.1744-linux.zip
+    
+ 6. Rename as sonar-scanner
+   ls
+   mv sonar-scanner-4.0.0.1744-linux/  sonar-scanner
+
+ 7. Configure sonar-scanner.properties
+  cd  sonar-scaner/conf
+  cat sonar-scanner.properties
+  vi sonar-scanner.properties
+     - Uncomment SonarQube Server
+        sonar.host.url=http://<sonarqube server private ip address>:9000
+     - save+quit
+
+# Genarate Sonar Authentication token
+  Login to SonarQube server as a admin My Account > Security > Generate Token
+  Enter Token Name: sonar-admin   
+  click on Generate.
+  
+
+sonarqube analysis
+-----------------------
+sonar.projectKey=SimpleCustomer
+sonar.projectName=SimpleCustomerApp
+sonar.projectVersion=1.0
+sonar.sources=/var/lib/jenkins/workspace/$JOB_NAME/SimpleCustomerApp/src
+sonar.language=java
+sonar.sourceEncoding=UTF-8
+sonar.java.binaries=/var/lib/jenkins/workspace/jenkins_sonar_demo/SimpleCustomerApp/build/classes
+
+sonar.projectKey=maven-demo
+sonar.projectName=maven-demo
+sonar.projectVersion=1.0
+sonar.sources=/var/lib/jenkins/workspace/$JOB_NAME/src
+sonar.language=java
+sonar.sourceEncoding=UTF-8
+sonar.java.binaries=/var/lib/jenkins/workspace/$JOB_NAME/target/classes
+sonar.junit.reportsPath=/var/lib/jenkins/workspace/$JOB_NAME/target/surefire-reports
+sonar.jacoco.reportPath=/var/lib/jenkins/workspace/$JOB_NAME/target/jacoco.exec
+
+
+Q--What are vulnerabilities in SonarQube?
+--Vulnerabilities are points in the code which are open to attack. Security Hotspots are security-sensitive pieces of code that should be carefully reviewed by someone with a security auditor hat. 
+This person can be: a member of the development team who is more sensitive to security problems.
+
+Q--What is code smells and bugs and vulnerabilities in SonarQube?
+--Code smells are usually not bugs—they are not technically incorrect and do not currently prevent the program from functioning. 
+Instead, they indicate weaknesses in design that may be slowing down development or increasing the risk of bugs or failures in the future.
+
+Q--What is meant by SonarQube?
+SonarQube (formerly Sonar) is an open-source platform developed by SonarSource for continuous inspection of code quality to perform automatic reviews with static analysis of code to detect bugs, 
+code smells, and security vulnerabilities on 20+ programming languages.
+
+Q--Is SonarQube a SAST tool?
+SonarQube is one of the world's most popular continuous code quality tools and it's actively used by many developers and companies. 
+This project aims to enable more security functionalities to SonarQube and use it as an SAST.
+
+Q--What is SonarQube code coverage?
+In one sentence Sonar is an open source platform that allows you to track and improve the quality of your source code. 
+One of the key aspects when talking about software quality is the test coverage or code coverage which is how much of your source code is tested by Unit tests.
+
+Q--What is SonarQube and SonarLint?
+SonarQube has a server associated with it. SonarLint supports only in the IDE like IntelliJ, Eclipse and Visual Studio. 
+SonarQube is a central server that processes which covers full analyses which need to be triggered by the various SonarQube Scanners. It gives instant feedback as you type your code.
+
+Q--Why should we use SonarQube?
+SonarQube increases productivity by enabling development teams to detect and muzzle duplication and redundancy of code. 
+SonarQube facilitates the team members to reduce the size of application, code complexity, maintenance time and cost and make code easy to read and understand.
+
+Q--How do I deploy SonarQube?
+Overview
+Get Started in Two Minutes. To give the SonarQube Platform a quick try, follow the Get Started in Two Minutes Guide.
+Install a Production Instance. To install a production instance, read the Requirements, and then follow the Installation Guide.
+After the Installation. ...
+Upgrade your Production Instance.
+
+Q--How do I scan codes with SonarQube?
+Just add the following two “environmental variables” to this file & save it. variable path followed by “$HOME/” will be the path where you kept your “sonarqube” & “sonarqube-scanner” folders. 
+Inside your “sonarqube-scanner” folder, go to “conf” folder and find “sonar-scanner.properties” file. Open it in edit mode.
+
+Q--What is bug SonarQube?
+Definition. Bug. An issue that represents something wrong in the code.
+
+Q--What is SonarQube tool?
+Sonar is a web based code quality analysis tool for Maven based Java projects. It covers a wide area of code quality check points which include:
+ Architecture & Design, Complexity, Duplications, Coding Rules, Potential Bugs, Unit Test etc.
+
+Q--How do you identify a smell code?
+Code smells and detection tools. Code smells were defined by Kent Beck in Fowler's book (Fowler 1999) as a mean to diagnose symptoms that may be indicative of something wrong in the system code.
+ They refer to any symptom in the source code of a program that possibly indicates a deeper problem.
+
+Q--How do I create a custom rule in SonarQube?
+Login as an Quality Profile Administrator.
+Go to Rules page.
+Select the Language for which you want to create the XPath rule.
+Tick the Template criterion and select "Show Templates Only"
+Look for the XPath rule template.
+
+Q--What is technical debt in SonarQube?
+The technical debt of a project is the simply the sum of the technical debt of every code smell in the project 
+(which means that bugs and vulnerabilities don't contribute to the technical debt). https://stackoverflow.com/questions/49179522/how-does-sonarqube-calculate-technical-debt/49188991#49188991.
+
+Q--What is quality gate in SonarQube?
+SonarQube is an Open Source tool for continuous inspection of code quality. ... This is a very powerful feature since it enforces code quality in your projects and automates the process. 
+How to setup your Quality Gates? By default, a quality gate called as 'SonarQube way' is activated and applied to all your projects.
+
+Q--What is false positive in SonarQube?
+Using Mark as False Positive
+When viewing your violations inline, SonarQube allows you to mark “False Positives” to prevent further alerts about certain issues in your code. 
+This will block that violation from appearing until it is unblocked. This feature will not carry the false positive between projects.
+
+Q--What does code smell mean?
+In computer programming, a code smell is any characteristic in the source code of a program that possibly indicates a deeper problem.
+ Determining what is and is not a code smell is subjective, and varies by language, developer, and development methodology. ... It is also a term used by agile programmers.
+
+Q--What is the difference between SonarQube and sonar scanner?
+SonarQube is the central server holding the results of analysis. SonarQube Scanner / sonar-scanner - performs analysis and sends the results to SonarQube. 
+It is a generic, CLI scanner, and you must provide explicit configurations that list the locations of your source files, test files, class files, ...
+
+Q--Is SonarQube a static analysis tool?
+SonarQube is an open source platform to perform automatic reviews with static analysis of code to detect bugs, code smells and security vulnerabilities 
+on 25+ programming languages including Java, C#, JavaScript, TypeScript, C/C++, COBOL and more.
+
+Q--What is SonarQube and how does it work?
+SonarQube is an open-source platform for continuous inspection of code quality. Using static code analysis, it tries to detect bugs, code smells and security vulnerabilities. 
+SonarQube supports many languages through built-in rulesets and can also be extended with various plugins.
+
+Q--Is SonarQube static code analysis?
+SonarQube can perform analysis on 20+ different languages. 
+The outcome of this analysis will be quality measures and issues (instances where coding rules were broken). ... On all languages, a static analysis of source code is performed (Java files, COBOL programs, etc.)
+
+Q--What are static code analysis tools?
+Static code analysis is a method of debugging by examining source code before a program is run. 
+It's done by analyzing a set of code against a set (or multiple sets) of coding rules. Static code analysis and static analysis are often used interchangeably, along with source code analysis.
+
+Q--Why static code analysis is important?
+Static code analysis is the analysis of software code without using the software's in-built programs. Static Analysis is generally more beneficial than a dynamic analysis because it: Provides better understanding of the application and its code. Detects more vulnerabilities.
+
+Q--What is masked vulnerability?
+A vulnerability is a weakness in a system or device that can be exploited to allow unauthorized access, elevation of privileges or denial of service. A tool used to attack a vulnerability is called an exploit.
+
+Q--What is static and dynamic code analysis?
+Static analysis involves going through the code in order to find out any possible defect in the code. Dynamic analysis involves executing the code and analyzing the output.
+
+Q--What is the difference between static and dynamic analysis?
+A static load is one which varies very slowly. A dynamic load is one which changes with time fairly quickly in comparison to the structure's natural frequency.
+
+Q--What is static and dynamic force analysis?
+acceleration in each member, so as to produce a static condition which is called dynamic. equilibrium.
+ Then the system can be treated as static, which permits application of. techniques of static force analysis. Dynamic force analysis is the evaluation of input forces or torques and joint forces.
+
+
+
+
+
+
+
+
+ 
+  
