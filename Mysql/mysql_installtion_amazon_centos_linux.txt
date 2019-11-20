@@ -2,7 +2,7 @@
 Amazon linux
 ----------------
 
-Step 1 — Installing MySQL
+Step 1 â€” Installing MySQL
 ----------------------------
 
 visit : https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-centos-7
@@ -18,7 +18,7 @@ sudo rpm -ivh mysql57-community-release-el7-9.noarch.rpm
 
 sudo yum install mysql-server -y
 
-Step 2 — Starting MySQL
+Step 2 â€” Starting MySQL
 -------------------------
 sudo systemctl start mysqld
 
@@ -30,10 +30,19 @@ sudo grep 'temporary password' /var/log/mysqld.log
 
 A temporary password is generated for root@localhost: -3*_!vAcUr:x
 
-Step 3 — Configuring MySQL
+Step 3 â€” Removeing validate password validation
+------------------------------------------------
+vi /etc/my.cnf
+
+validate-password=off
+
+systemctl restart mysqld
+
+
+Step 4 â€” Configuring MySQL
 -----------------------------
 sudo mysql_secure_installation
-It will prompt for few question’s, we recommended to say yes ( y ) for each.
+It will prompt for few questionâ€™s, we recommended to say yes ( y ) for each.
 
 Enter password for user root: <root temp password>
  
@@ -49,14 +58,6 @@ Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y
 Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
 
 Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
-
-Step 4 — Removeing validate password validation
-------------------------------------------------
-vi /etc/my.cnf
-
-validate-password=off
-
-systemctl restart mysqld
 
 Log in to the mysql
 -----------------------
@@ -76,7 +77,9 @@ quit
 Log in to the mysql
 -----------------------
 mysql -u root -p
-enter password: root123
+enter password: root123                             //remove Mysql From Linux
+                                                    //yum remove mysql mysql-server
+
 
 List MySQL Users
 --------------------
@@ -89,13 +92,13 @@ Create a New User
 ----------------------
 CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
 
-GRANT type_of_permission ON database_name.table_name TO ‘username’@'localhost’;
+GRANT type_of_permission ON database_name.table_name TO â€˜usernameâ€™@'localhostâ€™;
 GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
 FLUSH PRIVILEGES;
 
-REVOKE type_of_permission ON database_name.table_name FROM ‘username’@‘localhost’;
+REVOKE type_of_permission ON database_name.table_name FROM â€˜usernameâ€™@â€˜localhostâ€™;
 SHOW GRANTS username;
-DROP USER ‘username’@‘localhost’;
+DROP USER â€˜usernameâ€™@â€˜localhostâ€™;
 quit
 
 Login with new user
